@@ -12,4 +12,20 @@ defmodule MarvelClient.Cli do
     URI.encode("https://gateway.marvel.com:443/v1/public/characters?name=#{character_name}&apikey=#{public_key}&ts=#{timestamp}&hash=#{hashkey}")
   end
 
+  def call_api(character_name) do
+   character_name
+   |> marvelapi_url()
+   |> HTTPoison.get!()
+   |> response_body_json()
+   |> get_description()
+  end
+
+  def response_body_json(response) do
+    response.body |> JSON.decode!
+  end
+
+  def get_description(body) do
+    body |> Map.get("data") |> Map.get("results") |> List.first |> Map.get("description")
+  end
+
 end
